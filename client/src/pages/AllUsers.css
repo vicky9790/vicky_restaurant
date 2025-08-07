@@ -1,0 +1,35 @@
+.all-users-container {
+  padding: 40px;
+  background: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.all-users-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.users-table th {
+  background-color: #007bff;
+  color: white;
+  text-transform: uppercase;
+}
+
+.users-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}

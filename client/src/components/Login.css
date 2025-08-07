@@ -1,0 +1,117 @@
+/* src/components/Login.css */
+
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(to right, #000000, #808080);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-container {
+  max-width: 420px;
+  width: 100%;
+  padding: 40px 35px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.login-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #ff6b00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+  outline: none;
+}
+
+button[type="submit"] {
+  background-color: #ff6b00; /* orange */
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #e65a00;
+}
+
+.switch-link {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.switch-link a {
+  color: #ff6b00;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.switch-link a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: #d9534f;
+  font-size: 14px;
+  background: #fcebea;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .login-container {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+
+  .login-container h2 {
+    font-size: 24px;
+  }
+}

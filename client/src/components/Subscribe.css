@@ -1,0 +1,52 @@
+/* src/components/Subscribe.css */
+
+.subscribe-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 0;
+  background: #ffffff;
+}
+
+.subscribe-box {
+  background: #e6f6f9;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.subscribe-box h2 {
+  color: #006060;
+  margin-bottom: 20px;
+}
+
+.subscribe-box input {
+  padding: 12px 18px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 300px;
+  border: 2px solid teal;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.subscribe-box button {
+  background-color: orange;
+  border: none;
+  padding: 12px 24px;
+  color: white;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.subscribe-box button:hover {
+  background-color: darkorange;
+}
+
+.subscribe-message {
+  margin-top: 15px;
+  font-weight: 500;
+}

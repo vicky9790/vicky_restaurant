@@ -1,0 +1,57 @@
+.place-order-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.place-order-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+form div {
+  margin-bottom: 1rem;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.cart-items {
+  margin-top: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.cart-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.place-order-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.place-order-btn:hover {
+  background-color: #218838;
+}

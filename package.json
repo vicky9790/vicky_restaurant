@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "nodemailer": "^6.x.x",
     "mysql2": "^3.x.x",
     "dotenv": "^16.4.5",
     "cors": "^2.8.5",

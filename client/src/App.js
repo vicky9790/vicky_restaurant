@@ -16,6 +16,8 @@ import AllUsers from "./pages/AllUsers";
 import Users from "./pages/Users";
 import AllOrders from './pages/AllOrders';
 import MyOrders from "./pages/MyOrders";
+import './styles/main.css';
+
 
 // Optional NotFound component to show for unknown routes
 function NotFound() {

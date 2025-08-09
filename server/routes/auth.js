@@ -1,68 +1,69 @@
-// server/routes/auth.js
 const express = require("express");
+const bcrypt = require("bcrypt");
 const router = express.Router();
 const db = require("../config/db");
 
 // Signup route
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password)
     return res.status(400).json({ message: "All fields required" });
 
-  const checkQuery = "SELECT * FROM users WHERE email = ?";
-  db.query(checkQuery, [email], (err, results) => {
-    if (err) return res.status(500).json({ message: "DB error" });
-
-    if (results.length > 0) {
+  try {
+    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing.length > 0) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const insertQuery = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-    db.query(insertQuery, [name, email, password], (err) => {
-      if (err) return res.status(500).json({ message: "Signup failed" });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [
+      name,
+      email,
+      hashedPassword
+    ]);
 
-      res.status(201).json({ message: "Signup successful" });
-    });
-  });
+    res.status(201).json({ message: "Signup successful" });
+  } catch (err) {
+    console.error("Signup DB error:", err);
+    res.status(500).json({ message: "Signup failed", error: err.message });
+  }
 });
 
 // Login route
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const query = "SELECT * FROM users WHERE email = ?";
-  db.query(query, [email], (err, results) => {
-    if (err) return res.status(500).json({ message: "DB error" });
-
-    if (results.length === 0) {
+  try {
+    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (users.length === 0) {
       return res.status(401).json({ message: "Email not found" });
     }
 
-    const user = results[0];
-
-    if (user.password !== password) {
+    const user = users[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
     res.status(200).json({
       message: "Login successful",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      user: { id: user.id, name: user.name, email: user.email }
     });
-  });
+  } catch (err) {
+    console.error("Login DB error:", err);
+    res.status(500).json({ message: "DB error", error: err.message });
+  }
 });
 
+// Get all users
 router.get("/allusers", async (req, res) => {
   try {
-    const [users] = await db.query("SELECT id, username, email FROM users");
+    const [users] = await db.query("SELECT id, name, email FROM users");
     res.json(users);
   } catch (err) {
     console.error("Error fetching users:", err);
-    res.status(500).json({ message: "Failed to fetch users" });
+    res.status(500).json({ message: "Failed to fetch users", error: err.message });
   }
 });
 

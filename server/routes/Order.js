@@ -12,25 +12,31 @@ router.post('/place', (req, res) => {
     return res.status(400).json({ message: 'Missing required fields or items' });
   }
 
+  const totalAmount = items.reduce((sum, item) =>
+    sum + ((item.price || 0) * (item.quantity || 1)), 0);
+
   const orderSql = 'INSERT INTO orders (username, phone, address, status, total_amount) VALUES (?, ?, ?, ?, ?)';
-  const totalAmount = items.reduce((sum, item) => sum + (item.price || 0), 0);
 
   db.query(orderSql, [username, phone, address, 'Order Placed', totalAmount], (err, result) => {
     if (err) {
       console.error('Order insert error:', err);
-      return res.status(500).json({ message: 'Order creation failed' });
+      return res.status(500).json({ message: 'Order creation failed', error: err.message });
     }
 
     const orderId = result.insertId;
-    const orderItems = items.map(item => [orderId, item.name, item.price, item.image]);
-    const itemsSql = 'INSERT INTO order_items (order_id, name, price, image) VALUES ?';
+    const orderItems = items.map(item => [
+      orderId,
+      item.name || "",
+      item.price || 0,
+      item.image || ""
+    ]);
 
+    const itemsSql = 'INSERT INTO order_items (order_id, name, price, image) VALUES ?';
     db.query(itemsSql, [orderItems], (err) => {
       if (err) {
         console.error('Order items insert error:', err);
-        return res.status(500).json({ message: 'Failed to save order items' });
+        return res.status(500).json({ message: 'Failed to save order items', error: err.message });
       }
-
       res.status(200).json({ message: 'Order placed successfully!' });
     });
   });

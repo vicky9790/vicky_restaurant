@@ -14,8 +14,7 @@ const subscribeRoute = require('./routes/subscribe');
 const app = express();
 
 // Flexible list of allowed origins
-const allowedOrigins = [
-  'http://localhost:3000',                          // Local development origin
+const allowedOrigins = [                        // Local development origin
   process.env.FRONTEND_URL || 'https://vicky-restaurant.onrender.com'  // Production frontend origin (set in your .env or Render dashboard)
 ];
 

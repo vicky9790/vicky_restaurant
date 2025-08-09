@@ -12,7 +12,7 @@ const Home = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5050/api/subscribe', { email });
+      await axios.post(`${process.env.REACT_APP_API}/api/subscribe`, { email });
       alert('✅ Subscribed Successfully!');
       setEmail('');
     } catch (err) {

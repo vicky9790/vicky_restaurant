@@ -30,7 +30,7 @@ const PlaceOrder = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5050/api/order/place", {
+      const response = await axios.post(`${process.env.REACT_APP_API}/api/order/place`, {
         username,
         phone,
         address,

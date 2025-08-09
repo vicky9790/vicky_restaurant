@@ -8,7 +8,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5050/api/users/all");
+        const res = await axios.get(`${process.env.REACT_APP_API}/api/users/all`);
         setUsers(res.data); // ✅ make sure to use res.data
       } catch (err) {
         console.error(err);

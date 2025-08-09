@@ -6,7 +6,7 @@ const AllUsers = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5050/api/users/all")
+    axios.get(`${process.env.REACT_APP_API}/api/users/all`)
       .then((res) => setUsers(res.data))
       .catch((err) => console.error("Failed to fetch users:", err));
   }, []);

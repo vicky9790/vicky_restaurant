@@ -476,7 +476,7 @@ const Menu = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    axios.get('http://localhost:5050/api/menu')
+    axios.get(`${process.env.REACT_APP_API}/api/menu`)
       .then(res => setMenuItems(res.data))
       .catch(err => {
         console.error('API error, using fallback menu:', err);

@@ -32,7 +32,7 @@ const AllOrders = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5050/api/order/all")
+      .get(`${process.env.REACT_APP_API}/api/order/all`)
       .then((res) => setOrders(res.data))
       .catch((err) => console.error("Order fetch error:", err));
   }, []);

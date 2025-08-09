@@ -15,7 +15,7 @@ const MyOrders = () => {
     if (!username || !phone) return;
 
     axios
-      .get(`http://localhost:5050/api/order/myorders?username=${username}&phone=${phone}`)
+      .get(`${process.env.REACT_APP_API}/api/order/myorders?username=${username}&phone=${phone}`)
       .then((res) => {
         setOrders(res.data);
       })

@@ -16,10 +16,10 @@ const Navbar = () => {
       <div className="logo">Vicky's Restaurant</div>
       <ul className="nav-links">
         <li><Link to="/">Home</Link></li>         {/* ✅ Changed */}
-        <li><Link to="/menu">Menu</Link></li>     {/* ✅ lowercase */}
-        <li><Link to="/cart">Cart</Link></li>     {/* ✅ lowercase */}
-        <li><Link to="/about">About</Link></li>   {/* ✅ lowercase */}
-        <li><Link to="/login">Login</Link></li>   {/* ✅ lowercase */}
+        <li><Link to="/Menu">Menu</Link></li>     {/* ✅ lowercase */}
+        <li><Link to="/Cart">Cart</Link></li>     {/* ✅ lowercase */}
+        <li><Link to="/About">About</Link></li>   {/* ✅ lowercase */}
+        <li><Link to="/Login">Login</Link></li>   {/* ✅ lowercase */}
       </ul>
       <div className="navbar-toggle" id="toggle-btn">
         <span className="bar"></span>

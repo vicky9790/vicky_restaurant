@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom'; // ✅ Import Link
 import './Navbar.css';
 
 const Navbar = () => {
@@ -14,12 +15,11 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="logo">Vicky's Restaurant</div>
       <ul className="nav-links">
-        <li><a href="/">Home</a></li>
-        <li><a href="/menu">Menu</a></li>
-        <li><a href="/Cart">Cart</a></li>
-        <li><a href="/About">About</a></li>
-        <li><a href="/Login">Login</a></li>
-
+        <li><Link to="/">Home</Link></li>         {/* ✅ Changed */}
+        <li><Link to="/menu">Menu</Link></li>     {/* ✅ lowercase */}
+        <li><Link to="/cart">Cart</Link></li>     {/* ✅ lowercase */}
+        <li><Link to="/about">About</Link></li>   {/* ✅ lowercase */}
+        <li><Link to="/login">Login</Link></li>   {/* ✅ lowercase */}
       </ul>
       <div className="navbar-toggle" id="toggle-btn">
         <span className="bar"></span>

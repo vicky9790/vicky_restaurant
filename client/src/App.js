@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import Cart from './pages/Cart';
@@ -10,14 +10,17 @@ import Footer from './components/Footer';
 import { CartProvider } from './CartContext';
 import Signup from "./components/Signup";
 import Login from "./components/Login";
-import About  from './pages/About';
+import About from './pages/About';
 import PlaceOrder from "./pages/PlaceOrder";
-import AllUsers from "./pages/AllUsers"; 
+import AllUsers from "./pages/AllUsers";
 import Users from "./pages/Users";
 import AllOrders from './pages/AllOrders';
 import MyOrders from "./pages/MyOrders";
 
-
+// Optional NotFound component to show for unknown routes
+function NotFound() {
+  return <h2>404: Page Not Found</h2>;
+}
 
 function App() {
   return (
@@ -28,15 +31,16 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/About" element={<About />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/Signup" element={<Signup />} />
-          <Route path="/Login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/place-order" element={<PlaceOrder />} />
           <Route path="/allusers" element={<AllUsers />} />
-          <Route path="/Users" element={<Users />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/allorders" element={<AllOrders />} />
           <Route path="/myorders" element={<MyOrders />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Router>

@@ -1,9 +1,6 @@
-// server/server.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-
-// Load environment variables from .env
 dotenv.config();
 
 const authRoutes = require('./routes/auth');
@@ -13,28 +10,27 @@ const subscribeRoute = require('./routes/subscribe');
 
 const app = express();
 
-// Flexible list of allowed origins
-const allowedOrigins = [                        // Local development origin
-  process.env.FRONTEND_URL || 'https://vicky-restaurant.onrender.com'  // Production frontend origin (set in your .env or Render dashboard)
-];
+// Allowed origins for CORS
+const allowedOrigins = [
+  'http://localhost:3000', // Local dev
+  'https://vicky-restaurant.onrender.com', // Prod frontend
+  process.env.FRONTEND_URL // Optional from .env
+].filter(Boolean);
 
-// Robust CORS configuration supporting both dev and prod
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin, like curl and Postman
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `CORS policy: No access from origin ${origin}`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true, // allow cookies/headers if you use authentication
-  })
-);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow Postman / curl
+    if (!allowedOrigins.includes(origin)) {
+      return callback(new Error(`CORS policy: No access from origin ${origin}`), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 
+// Parse body
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -42,9 +38,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/subscribe', subscribeRoute);
 
-// Test endpoint
+// Health check
 app.get('/', (req, res) => {
-  res.send('Vicky-Restaurant backend running!');
+  res.send('✅ Vicky-Restaurant backend running!');
 });
 
 // Start server

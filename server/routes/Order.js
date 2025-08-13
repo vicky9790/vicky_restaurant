@@ -1,29 +1,27 @@
-// server/routes/Order.js
-
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db'); // adjust path if needed
+const db = require('../config/db'); // mysql2/promise pool
 
 // Place order
-router.post('/place', (req, res) => {
-  const { username, phone, address, items } = req.body;
+router.post('/place', async (req, res) => {
+  try {
+    const { username, phone, address, items } = req.body;
 
-  if (!username || !phone || !address || !items || items.length === 0) {
-    return res.status(400).json({ message: 'Missing required fields or items' });
-  }
-
-  const totalAmount = items.reduce((sum, item) =>
-    sum + ((item.price || 0) * (item.quantity || 1)), 0);
-
-  const orderSql = 'INSERT INTO orders (username, phone, address, status, total_amount) VALUES (?, ?, ?, ?, ?)';
-
-  db.query(orderSql, [username, phone, address, 'Order Placed', totalAmount], (err, result) => {
-    if (err) {
-      console.error('Order insert error:', err);
-      return res.status(500).json({ message: 'Order creation failed', error: err.message });
+    if (!username || !phone || !address || !items || items.length === 0) {
+      return res.status(400).json({ message: 'Missing required fields or items' });
     }
 
-    const orderId = result.insertId;
+    const totalAmount = items.reduce((sum, item) =>
+      sum + ((item.price || 0) * (item.quantity || 1)), 0
+    );
+
+    // Insert order
+    const orderSql = 'INSERT INTO orders (username, phone, address, status, total_amount) VALUES (?, ?, ?, ?, ?)';
+    const [orderResult] = await db.query(orderSql, [username, phone, address, 'Order Placed', totalAmount]);
+
+    const orderId = orderResult.insertId;
+
+    // Prepare items
     const orderItems = items.map(item => [
       orderId,
       item.name || "",
@@ -31,87 +29,70 @@ router.post('/place', (req, res) => {
       item.image || ""
     ]);
 
+    // Insert items
     const itemsSql = 'INSERT INTO order_items (order_id, name, price, image) VALUES ?';
-    db.query(itemsSql, [orderItems], (err) => {
-      if (err) {
-        console.error('Order items insert error:', err);
-        return res.status(500).json({ message: 'Failed to save order items', error: err.message });
-      }
-      res.status(200).json({ message: 'Order placed successfully!' });
-    });
-  });
-});
+    await db.query(itemsSql, [orderItems]);
 
-// GET /api/order/user/:userId
-router.get('/myorders', (req, res) => {
-  const { username, phone } = req.query;
+    res.status(200).json({ message: 'Order placed successfully!', orderId });
 
-  if (!username || !phone) {
-    return res.status(400).json({ error: "Username and phone required" });
+  } catch (err) {
+    console.error('Order placement error:', err);
+    res.status(500).json({ message: 'Order creation failed', error: err.message });
   }
-
-  db.query(
-    "SELECT * FROM orders WHERE username = ? AND phone = ? ORDER BY id DESC",
-    [username, phone],
-    async (err, orderResults) => {
-      if (err) return res.status(500).json({ error: "DB error", details: err });
-
-      const enrichedOrders = await Promise.all(
-        orderResults.map(async (order) => {
-          return new Promise((resolve) => {
-            db.query(
-              "SELECT * FROM order_items WHERE order_id = ?",
-              [order.id],
-              (err, itemResults) => {
-                if (err) resolve({ ...order, items: [] });
-                else resolve({ ...order, items: itemResults });
-              }
-            );
-          });
-        })
-      );
-
-      res.json(enrichedOrders);
-    }
-  );
 });
 
+// Get my orders
+router.get('/myorders', async (req, res) => {
+  try {
+    const { username, phone } = req.query;
+    if (!username || !phone) {
+      return res.status(400).json({ error: "Username and phone required" });
+    }
 
+    const [orderResults] = await db.query(
+      "SELECT * FROM orders WHERE username = ? AND phone = ? ORDER BY id DESC",
+      [username, phone]
+    );
+
+    // Fetch items for each order
+    const enrichedOrders = await Promise.all(orderResults.map(async order => {
+      const [itemResults] = await db.query(
+        "SELECT * FROM order_items WHERE order_id = ?",
+        [order.id]
+      );
+      return { ...order, items: itemResults };
+    }));
+
+    res.json(enrichedOrders);
+  } catch (err) {
+    res.status(500).json({ error: "DB error", details: err.message });
+  }
+});
 
 // Get all orders with items
-router.get('/all', (req, res) => {
-  const sql = 'SELECT * FROM orders ORDER BY id DESC';
-
-  db.query(sql, (err, orders) => {
-    if (err) return res.status(500).json({ message: 'Error fetching orders' });
+router.get('/all', async (req, res) => {
+  try {
+    const [orders] = await db.query('SELECT * FROM orders ORDER BY id DESC');
+    if (orders.length === 0) return res.status(200).json([]);
 
     const orderIds = orders.map(o => o.id);
-    if (orderIds.length === 0) return res.status(200).json([]);
+    const [items] = await db.query('SELECT * FROM order_items WHERE order_id IN (?)', [orderIds]);
 
-    const itemsSql = 'SELECT * FROM order_items WHERE order_id IN (?)';
-
-    db.query(itemsSql, [orderIds], (err, items) => {
-      if (err) return res.status(500).json({ message: 'Error fetching items' });
-
-      const itemsMap = {};
-      items.forEach(item => {
-        if (!itemsMap[item.order_id]) itemsMap[item.order_id] = [];
-        itemsMap[item.order_id].push(item);
-      });
-
-      const enrichedOrders = orders.map(order => ({
-        ...order,
-        items: itemsMap[order.id] || []
-      }));
-
-      res.status(200).json(enrichedOrders);
+    const itemsMap = {};
+    items.forEach(item => {
+      if (!itemsMap[item.order_id]) itemsMap[item.order_id] = [];
+      itemsMap[item.order_id].push(item);
     });
-  });
-});
 
-// Basic GET for health check
-router.get('/place', (req, res) => {
-  res.send('✅ This is the order placement endpoint. Use POST to place an order.');
+    const enrichedOrders = orders.map(order => ({
+      ...order,
+      items: itemsMap[order.id] || []
+    }));
+
+    res.status(200).json(enrichedOrders);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching orders', error: err.message });
+  }
 });
 
 module.exports = router;
